@@ -4,6 +4,7 @@ pipeline{
 
   
     stages{
+
         stage("Build"){
             steps{
                 powershell(script: 'docker build -t disneyplus:jenkins .')
@@ -17,14 +18,28 @@ pipeline{
         stage("Deploy to DockerHub"){
            
             steps{
-                powershell(script: '''
-                    docker login -u %username% -p %dockerToken%
-                    docker tag disneyplus:jenkins %username%/disneyplus:jenkins
-                    docker push %username%/disneyplus:jenkins'''
-                )
+
+                withCredentials([
+                    string(credentialsId: 'dockerhub', variable: 'DOCKER_TOKEN'),
+                    string(credentialsId: 'username', variable: 'USERNAME')
+                ])
+
+
+                {
+                    powershell(script: '''
+                        docker login -u $env:USERNAME -p $env:DOCKER_TOKEN
+                        docker tag disneyplus:jenkins $env:USERNAME/disneyplus:jenkins
+                        docker push $env:USERNAME/disneyplus:jenkins
+                    '''
+                    )
+                }
+
 
             }
+
+
         }
+
     }
     
 
