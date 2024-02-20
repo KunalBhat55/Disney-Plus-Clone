@@ -6,7 +6,7 @@ pipeline{
     stages{
         stage("Build"){
             steps{
-                powershell(script: 'echo "Building the app"')
+                powershell(script: 'docker build -t disneyplus:jenkins .')
             }
         }
         stage("Test"){
@@ -14,9 +14,15 @@ pipeline{
                 powershell(script: 'echo "Testing the app"')
             }
         }
-        stage("Deploy"){
+        stage("Deploy to DockerHub"){
+           
             steps{
-                powershell(script: 'echo "Deploying the app"')
+                powershell(script: '''
+                    docker login -u %username% -p %dockerToken%
+                    docker tag disneyplus:jenkins %username%/disneyplus:jenkins
+                    docker push %username%/disneyplus:jenkins'''
+                )
+
             }
         }
     }
