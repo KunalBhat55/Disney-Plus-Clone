@@ -1,11 +1,7 @@
 pipeline{
 
  agent any 
- environment{
-   
-   DOCKER_CREDENTIALS = 
- 
- }
+
   
     stages{
         stage("Build"){
